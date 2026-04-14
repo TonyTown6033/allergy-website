@@ -16,6 +16,8 @@ services:
       - "${BACKEND_PORT:-24300}:3000"
     volumes:
       - ./docker-data/new-api:/data
+    labels:
+      - com.centurylinklabs.watchtower.scope=allergy
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3000/api/status | grep -Eq '\"success\":\\s*true'"]
       interval: 30s
@@ -32,8 +34,30 @@ services:
         condition: service_healthy
     ports:
       - "${FRONTEND_PORT:-24880}:80"
+    labels:
+      - com.centurylinklabs.watchtower.scope=allergy
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/healthz | grep -Fxq 'ok'"]
       interval: 30s
       timeout: 5s
       retries: 3
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_CONFIG:-/root/.docker}:/config/docker:ro
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      # 每 5 分钟检查一次镜像更新
+      WATCHTOWER_POLL_INTERVAL: "300"
+      # 只监控同一 compose 项目的容器
+      WATCHTOWER_SCOPE: allergy
+      # 更新后清理旧镜像
+      WATCHTOWER_CLEANUP: "true"
+      # 更新时发送通知（可选，填写后才生效）
+      WATCHTOWER_NOTIFICATION_URL: ${WATCHTOWER_NOTIFICATION_URL:-}
+    labels:
+      - com.centurylinklabs.watchtower.scope=allergy
