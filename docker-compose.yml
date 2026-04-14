@@ -1,7 +1,6 @@
 services:
   allergy-api:
-    build:
-      context: ./new-api
+    image: ghcr.io/tonytown6033/allergy-website-api:latest
     container_name: allergy-api
     restart: unless-stopped
     command: ["--log-dir", "/data/logs"]
@@ -25,10 +24,7 @@ services:
       start_period: 20s
 
   allergy-web:
-    build:
-      context: ./Allergy
-      args:
-        VITE_API_URL: ${FRONTEND_API_URL:-same-origin}
+    image: ghcr.io/tonytown6033/allergy-website-web:latest
     container_name: allergy-web
     restart: unless-stopped
     depends_on:
