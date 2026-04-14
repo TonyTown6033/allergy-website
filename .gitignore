@@ -1,3 +1,5 @@
 Allergy/
 new-api/
 .DS_Store
+.env
+docker-data/

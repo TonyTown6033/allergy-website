@@ -1,0 +1,44 @@
+services:
+  allergy-api:
+    build:
+      context: ./new-api
+    container_name: allergy-api
+    restart: unless-stopped
+    command: ["--log-dir", "/data/logs"]
+    environment:
+      PORT: "3000"
+      GIN_MODE: release
+      TZ: ${TZ:-Asia/Shanghai}
+      DEBUG: ${DEBUG:-false}
+      SESSION_SECRET: ${SESSION_SECRET:?set SESSION_SECRET in .env}
+      CRYPTO_SECRET: ${CRYPTO_SECRET:-}
+      SQLITE_PATH: "/data/one-api.db?_busy_timeout=30000"
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    volumes:
+      - ./docker-data/new-api:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:3000/api/status | grep -Eq '\"success\":\\s*true'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  allergy-web:
+    build:
+      context: ./Allergy
+      args:
+        VITE_API_URL: ${FRONTEND_API_URL:-same-origin}
+    container_name: allergy-web
+    restart: unless-stopped
+    depends_on:
+      allergy-api:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/healthz | grep -q '^ok$'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
