@@ -14,7 +14,7 @@ services:
       CRYPTO_SECRET: ${CRYPTO_SECRET:-}
       SQLITE_PATH: "/data/one-api.db?_busy_timeout=30000"
     ports:
-      - "${BACKEND_PORT:-3000}:3000"
+      - "${BACKEND_PORT:-24300}:3000"
     volumes:
       - ./docker-data/new-api:/data
     healthcheck:
@@ -35,10 +35,9 @@ services:
       allergy-api:
         condition: service_healthy
     ports:
-      - "${FRONTEND_PORT:-8080}:80"
+      - "${FRONTEND_PORT:-24880}:80"
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/healthz | grep -q '^ok$'"]
       interval: 30s
       timeout: 5s
       retries: 3
-
