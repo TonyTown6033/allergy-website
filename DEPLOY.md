@@ -5,6 +5,21 @@
 - 过敏检测前端站点 `Allergy`
 - `new-api` 后端
 
+## 0. 拉取代码
+
+根仓库使用 Git submodule 管理前端和后端代码，拉取时要带上子模块：
+
+```bash
+git clone --recurse-submodules https://github.com/TonyTown6033/allergy-website.git
+cd allergy-website
+```
+
+如果已经 clone 过根仓库，再执行一次：
+
+```bash
+git submodule update --init --recursive
+```
+
 ## 1. 准备环境变量
 
 ```bash
