@@ -226,6 +226,10 @@
 
 - `token` 是会员登录态
 - 前端可继续使用本地存储方式保存它
+- 该接口只服务公共站会员登录
+- 若邮箱不存在，则创建会员账号并补齐 `member_profile`
+- 若邮箱已存在且绑定了可用的 `member_profile`，则允许登录
+- 若邮箱对应的是后台管理员账号，但没有可用的 `member_profile`，则拒绝登录并提示使用后台入口
 
 ### `GET /api/auth/me`
 
@@ -312,6 +316,14 @@ Authorization: Bearer <session_token>
   }
 }
 ```
+
+行为建议：
+
+- 支付成功前，订单始终保持 `payment_status = pending`
+- 用户主动取消支付、支付失败、支付超时后，订单仍保持 `order_status = pending_payment`
+- 前端订单页统一提示“支付未完成，可继续支付”
+- 对于未支付订单，允许再次调用 `POST /api/orders/:id/pay` 重新拉起支付
+- 第一版不强制做自动关单，由后台按业务需要手工取消未支付订单
 
 说明：
 
@@ -504,12 +516,20 @@ Authorization: Bearer <session_token>
     "report_id": 3001,
     "report_title": "过敏原检测报告",
     "report_status": "published",
+    "access_mode": "authorized_blob",
     "published_at": "2026-04-20T15:00:00+08:00",
     "preview_url": "/api/reports/3001/preview",
     "download_url": "/api/reports/3001/download"
   }
 }
 ```
+
+说明：
+
+- 这里只返回“当前有效报告”
+- 当前有效报告必须满足：
+  - `report_status = published`
+  - `is_current = true`
 
 ### `GET /api/reports/:id/preview`
 
@@ -521,6 +541,9 @@ Authorization: Bearer <session_token>
 
 - 返回 `application/pdf`
 - `Content-Disposition: inline`
+- 该地址是受保护 API，不是公开静态链接
+- 前端必须通过 `fetch` / XHR 携带会员 `Bearer token` 获取 PDF 二进制
+- 前端再使用 `Blob URL + iframe/object/embed` 完成预览
 
 权限要求：
 
@@ -536,6 +559,8 @@ Authorization: Bearer <session_token>
 
 - 返回 `application/pdf`
 - `Content-Disposition: attachment`
+- 该地址同样要求通过带 `Authorization` 的请求获取
+- 前端拿到 PDF `Blob` 后再触发浏览器下载
 
 权限要求：
 
@@ -627,6 +652,29 @@ Authorization: Bearer <session_token>
 - 自动更新订单状态到 `sample_received` 或 `in_testing`
 - 自动写入时间线
 
+### `POST /api/admin/orders/:id/sample-sent-back`
+
+用途：
+
+- 登记用户已回寄样本
+
+请求：
+
+```json
+{
+  "return_carrier": "顺丰",
+  "return_tracking_no": "SF0987654321",
+  "sent_back_at": "2026-04-15T18:20:00+08:00",
+  "remark": "用户已回寄样本"
+}
+```
+
+行为建议：
+
+- 更新 `sample_kit.kit_status = sample_sent_back`
+- 更新订单状态到 `sample_returning`
+- 写入时间线事件 `sample_sent_back`
+
 ### 5.3 报告管理
 
 ### `POST /api/admin/orders/:id/report`
@@ -680,9 +728,14 @@ Authorization: Bearer <session_token>
 
 ```json
 {
-  "target_email": "user@example.com"
+  "target_type": "order_email"
 }
 ```
+
+`target_type` 允许值：
+
+- `order_email`
+- `account_email`
 
 响应：
 
@@ -692,7 +745,8 @@ Authorization: Bearer <session_token>
   "message": "报告已发送",
   "data": {
     "report_id": 3001,
-    "target_email": "user@example.com",
+    "target_type": "order_email",
+    "resolved_email": "user@example.com",
     "delivery_status": "sent"
   }
 }
@@ -700,6 +754,9 @@ Authorization: Bearer <session_token>
 
 行为建议：
 
+- 不允许后台输入任意邮箱地址
+- 由服务端根据 `target_type` 解析出真实收件邮箱
+- 若所选邮箱不存在，或账号邮箱未验证，则拒绝发送
 - 发送后写入 `report_delivery_log`
 - 同时写入时间线 `report_email_sent`
 
@@ -737,8 +794,16 @@ Authorization: Bearer <session_token>
 7. 后台开始人工履约：
    - 采样盒备货
    - 物流登记
+   - 用户回寄登记
    - 样本签收
    - 报告上传
+
+### 支付失败与取消规则
+
+- 用户从支付页返回 `cancel_url` 时，订单仍保持未支付
+- 若支付渠道未成功回调，订单页仍展示“待支付”
+- 用户可在同一订单上重新发起支付
+- 只有支付成功回调才会把订单推进到已支付
 
 ### 不建议的做法
 
@@ -750,7 +815,7 @@ Authorization: Bearer <session_token>
 
 ## 7. 最小接口集合建议
 
-如果只做第一版，我建议至少实现这 14 个接口：
+如果只做第一版，我建议至少实现这 15 个接口：
 
 1. `GET /api/hero`
 2. `GET /api/testimonials`
@@ -766,6 +831,7 @@ Authorization: Bearer <session_token>
 12. `GET /api/orders/:id/timeline`
 13. `GET /api/orders/:id/report`
 14. `GET /api/reports/:id/download`
+15. `POST /api/admin/orders/:id/sample-sent-back`
 
 如果要把“报告预览”和“后台上传补发”也纳入首版，建议追加这 4 个：
 
@@ -789,6 +855,11 @@ Authorization: Bearer <session_token>
 | 订单详情 | `/api/orders/:id`, `/api/orders/:id/timeline` |
 | 报告详情 | `/api/orders/:id/report`, `/api/reports/:id/preview`, `/api/reports/:id/download` |
 
+补充说明：
+
+- 报告页的预览和下载都应由前端先带登录态拉取 PDF `Blob`
+- 不要求用户直接裸打开 `preview_url` / `download_url`
+
 ---
 
 ## 9. 推荐的后台页面映射
@@ -797,7 +868,7 @@ Authorization: Bearer <session_token>
 |---|---|
 | 订单列表 | `/api/admin/orders` |
 | 订单详情 | `/api/admin/orders/:id`, `/api/admin/orders/:id/kit` |
-| 样本处理 | `/api/admin/orders/:id/sample-received` |
+| 样本处理 | `/api/admin/orders/:id/sample-sent-back`, `/api/admin/orders/:id/sample-received` |
 | 报告上传 | `/api/admin/orders/:id/report` |
 | 报告发布 | `/api/admin/reports/:id/publish` |
 | 报告补发 | `/api/admin/reports/:id/send-email`, `/api/admin/reports/:id/delivery-logs` |

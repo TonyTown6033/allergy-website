@@ -157,6 +157,9 @@
 - 站点使用自己的 `session token`
 - 不复用 `new-api` 的 `access_token` 语义
 - 公共站会员登录入口和后台管理员入口必须分开
+- 公共站登录只允许存在有效 `member_profile` 的账号
+- 如果邮箱不存在，则创建会员账号和 `member_profile`
+- 后台管理员账号如果没有 `member_profile`，不得走公共站登录
 
 ### 5.2 商品与履约
 
@@ -167,6 +170,7 @@
 - 人工履约包括：
   - 采样盒寄送
   - 物流登记
+  - 回寄登记
   - 报告上传
   - 手工补发邮件
 
@@ -188,6 +192,12 @@
 - 用户端支持 PDF 预览和下载
 - 后台支持手工补发 PDF 到用户邮箱
 - 用户端要有检测进度时间线
+- PDF 预览和下载不走公开 URL，前端必须带会员登录态拉取 PDF `Blob`
+- 报告补发只允许：
+  - `order_email`
+  - `account_email`
+- 不允许后台输入任意邮箱地址
+- 一个订单可以有多个报告版本，但只允许一份当前有效报告
 
 ### 5.5 内容
 
@@ -239,6 +249,7 @@
   - 或订单通知邮箱
 - 不要默认允许后台把报告发到任意邮箱
 - 每次补发都要写发送日志
+- 预览和下载接口必须是受保护接口，不要暴露公开直链
 
 ### 6.4 共用 `user` 主表，但角色必须隔离
 
@@ -267,6 +278,7 @@
 - 一个订单默认对应一个采样盒
 - 一个订单未来可以有多个报告版本，但同一时间只能有一份当前有效报告
 - 时间线不能只靠状态字段推导，关键动作要落事件表
+- 用户回寄样本第一版由后台登记，时间线要能体现 `sample_sent_back`
 
 ## 8. 目标接口
 
@@ -299,6 +311,7 @@
 - `GET /api/admin/orders/:id`
 - `PATCH /api/admin/orders/:id/status`
 - `POST /api/admin/orders/:id/kit`
+- `POST /api/admin/orders/:id/sample-sent-back`
 - `POST /api/admin/orders/:id/sample-received`
 - `POST /api/admin/orders/:id/report`
 - `POST /api/admin/reports/:id/publish`
@@ -319,12 +332,12 @@
 - `allergy_order`
 - `sample_kit`
 - `lab_report`
+- `report_delivery_log`
 - `order_timeline_event`
 
 如实现成本可控，再补：
 
 - `lab_submission`
-- `report_delivery_log`
 
 ### Step 2
 
@@ -360,6 +373,7 @@
 
 - 订单状态管理
 - 采样盒登记
+- 样本回寄登记
 - 样本签收
 - PDF 上传
 - 报告发布
@@ -387,6 +401,7 @@
 - 默认尽量少改 `Allergy` 前端
 - 只在接邮箱登录、订单页、支付页、报告页时做必要改动
 - 不要把 `new-api` 的平台概念暴露到用户页面上
+- 报告页的预览和下载都按“带鉴权获取 PDF `Blob`”实现
 
 ## 12. 不要做的事
 
@@ -410,3 +425,4 @@
 7. 用户能看到检测进度时间线
 8. 用户能预览和下载 PDF 报告
 9. 后台能手工补发 PDF 到用户邮箱
+10. 报告补发不允许发送到任意邮箱

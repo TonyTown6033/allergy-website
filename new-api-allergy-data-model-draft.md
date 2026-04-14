@@ -130,6 +130,9 @@
 强烈建议：
 
 - 在 Allergy 会员登录范围内，对 `email` 做唯一约束
+- 公共站会员以 `member_profile` 存在且 `status = active` 作为准入标记
+- 后台管理员账号如果没有可用 `member_profile`，不能走公共站邮箱验证码登录
+- 管理员如需体验前台流程，使用独立会员邮箱，不与后台邮箱共用
 
 如果短期内不改数据库唯一索引，也至少要在应用层强校验“一个邮箱只能对应一个有效会员账号”。
 
@@ -165,6 +168,7 @@
 
 - 第一版默认地址放 JSON，先追求简单
 - 如果后续需要省市区检索，再拆结构化地址表
+- 公共站邮箱验证码登录只允许 `status = active` 的会员资料
 
 ### 5.2 `email_login_code_store`
 
@@ -298,7 +302,9 @@
 | `outbound_tracking_no` | varchar(128) null | 寄出运单号 |
 | `outbound_shipped_at` | datetime null | 寄出时间 |
 | `delivered_at` | datetime null | 用户签收时间 |
+| `return_carrier` | varchar(64) null | 用户回寄物流公司 |
 | `return_tracking_no` | varchar(128) null | 用户回寄运单号，可空 |
+| `sample_sent_back_at` | datetime null | 用户回寄时间 |
 | `sample_received_at` | datetime null | 样本收到时间 |
 | `remark` | text null | 备注 |
 | `created_at` | datetime | 创建时间 |
@@ -361,7 +367,10 @@
 | `lab_submission_id` | bigint null | 对应送检记录 |
 | `report_no` | varchar(128) null | 报告编号 |
 | `report_title` | varchar(255) | 报告标题 |
+| `version_no` | int | 同一订单内的报告版本号，从 1 递增 |
 | `report_status` | varchar(32) | 见状态字典 |
+| `is_current` | bool | 是否当前有效版本 |
+| `replaces_report_id` | bigint null | 当前版本替代的旧报告 |
 | `pdf_storage_type` | varchar(32) | 例如 `local` / `oss` |
 | `pdf_file_path` | varchar(1024) | 文件路径或 URL |
 | `pdf_file_name` | varchar(255) | 文件名 |
@@ -387,6 +396,9 @@
 
 - 第一版只要求 `pdf_file_path` 可用
 - `summary_json` 先留空
+- 同一订单同一时间只能有一份 `is_current = true` 的报告
+- `GET /api/orders/:id/report` 只返回 `report_status = published` 且 `is_current = true` 的那一份
+- 发布新版本时，旧的当前报告应改为 `is_current = false`
 
 ### 5.8 `report_delivery_log`
 
@@ -402,6 +414,7 @@
 | `id` | bigint PK | 主键 |
 | `report_id` | bigint index | 对应报告 |
 | `delivery_channel` | varchar(32) | 第一版固定 `email` |
+| `target_source` | varchar(32) | `order_email` / `account_email` |
 | `target` | varchar(255) | 目标邮箱 |
 | `status` | varchar(32) | `pending` / `sent` / `failed` |
 | `triggered_by_admin_user_id` | bigint null | 触发补发的管理员 |
@@ -480,7 +493,7 @@
 | `allergy_order` | `order_no` unique, `user_id`, `payment_status`, `order_status` |
 | `sample_kit` | `order_id` unique, `kit_code` unique |
 | `lab_submission` | `order_id` unique, `submission_no` |
-| `lab_report` | `order_id`, `report_status` |
+| `lab_report` | `order_id`, `report_status`, `is_current`, `version_no` |
 | `report_delivery_log` | `report_id`, `status`, `created_at` |
 | `order_timeline_event` | `order_id`, `occurred_at` |
 
@@ -488,7 +501,7 @@
 
 ## 8. 当前最小可行版本建议
 
-如果目标是尽快把第一版做起来，我建议数据库最少先实现这 7 张表或等价结构：
+如果目标是尽快把第一版做起来，我建议数据库最少先实现这 8 张表或等价结构：
 
 1. `member_profile`
 2. `email_login_code_store`
@@ -496,9 +509,10 @@
 4. `allergy_order`
 5. `sample_kit`
 6. `lab_report`
-7. `order_timeline_event`
+7. `report_delivery_log`
+8. `order_timeline_event`
 
-`lab_submission` 和 `report_delivery_log` 也建议尽早有，但如果要极限压缩第一版，它们可以稍后补齐。
+`lab_submission` 建议尽早有，但如果要极限压缩第一版，它可以稍后补齐。
 
 ---
 
@@ -510,6 +524,8 @@
 
 但无论用哪种存储，`lab_report` 都只保存“文件引用”，不要把 PDF 二进制直接塞数据库。
 
+如果使用本地文件路径，这个路径必须位于持久化存储中，不能依赖容器临时目录。
+
 ### 9.2 邮件发送
 
 由于当前需求是“后台手工补发”，所以第一版不用做复杂消息队列。
@@ -517,6 +533,7 @@
 最小做法是：
 
 - 管理员点击补发
+- 只能选择 `order_email` 或 `account_email` 作为收件目标
 - 后端读取 PDF
 - 发送邮件
 - 写 `report_delivery_log`
