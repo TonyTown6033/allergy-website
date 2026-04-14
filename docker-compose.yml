@@ -37,7 +37,7 @@ services:
     ports:
       - "${FRONTEND_PORT:-24880}:80"
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/healthz | grep -q '^ok$'"]
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/healthz | grep -Fxq 'ok'"]
       interval: 30s
       timeout: 5s
       retries: 3
