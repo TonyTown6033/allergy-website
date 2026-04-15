@@ -2,9 +2,14 @@
 
 日期：2026-04-13
 
+> 状态说明
+> - 这份文档保留第一阶段数据建模思路
+> - 其中认证相关字段说明基于早期验证码登录方案
+> - 当前会员账号体系请以 [../auth/member-auth-design.md](../auth/member-auth-design.md) 为准
+
 关联文档：
 
-- [new-api-allergy-integration-design.md](/Users/town/Projects/allergy_website/new-api-allergy-integration-design.md:1)
+- [integration-design.md](./integration-design.md)
 
 ## 1. 范围
 

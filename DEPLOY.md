@@ -1,4 +1,9 @@
-# Docker Compose 部署
+# DEPLOY.md — Docker Compose 部署
+
+关联文档：
+
+- [README.md](./README.md)
+- [docs/README.md](./docs/README.md)
 
 这个目录下的 `docker-compose.yml` 用来同时启动：
 

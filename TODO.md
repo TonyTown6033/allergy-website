@@ -1,4 +1,10 @@
-# 过敏原订单支付与履约 TODO
+# TODO.md — 过敏原订单支付与履约
+
+关联文档：
+
+- [README.md](./README.md)
+- [claude.md](./claude.md)
+- [docs/README.md](./docs/README.md)
 
 ## 目标
 
@@ -9,6 +15,18 @@
 - 管理员登记样本回收、检测进度、报告发布和邮件发送
 - 后续支持退款、售后和对账
 
+## 当前任务与文档挂接
+
+以后新增功能默认按“`TODO.md` 挂任务 + `docs/<domain>/` 落专项文档”的方式推进。
+
+| 任务 | 当前状态 | 文档入口 |
+|---|---|---|
+| 会员账号体系改造 | 已实现，待执行线上清理与联调 | [design](./docs/auth/member-auth-design.md)<br>[api-contract](./docs/auth/member-auth-api-contract.md)<br>[migration](./docs/auth/member-auth-migration-cleanup.md)<br>[test-plan](./docs/auth/member-auth-test-plan.md) |
+| 履约备注区与操作日志 | 已建草案，待细化 | [design](./docs/fulfillment/notes-and-audit-design.md)<br>[api-contract](./docs/fulfillment/notes-and-audit-api-contract.md)<br>[test-plan](./docs/fulfillment/notes-and-audit-test-plan.md) |
+| 发货 SOP 文档 | 已建骨架，待补内容 | [docs/fulfillment/shipping-sop-outline.md](./docs/fulfillment/shipping-sop-outline.md) |
+| 退款流程 | 已建草案，待锁定规则 | [design](./docs/payment/refund-design.md)<br>[api-contract](./docs/payment/refund-api-contract.md)<br>[test-plan](./docs/payment/refund-test-plan.md) |
+| 支付对账与导出 | 已建草案，待补接口 | [design](./docs/reconciliation/reconciliation-design.md)<br>[api-contract](./docs/reconciliation/reconciliation-api-contract.md)<br>[test-plan](./docs/reconciliation/reconciliation-test-plan.md) |
+
 ## 当前实现状态
 
 ### 已有能力
@@ -17,39 +35,50 @@
 - [x] 支付成功后自动更新订单为 `paid`
 - [x] 支付回调原文、第三方支付单号、支付时间已写入数据库
 - [x] 管理端已有过敏原订单相关 API
+- [x] 管理控制台已有过敏原订单列表页和详情页
 - [x] 可通过 API 更新采样盒状态、录入物流单号
+- [x] 可通过 API 标记样本回寄、开始检测、完成订单
 - [x] 可通过 API 标记样本已签收
 - [x] 可通过 API 上传 PDF 报告、发布报告、补发邮件
+- [x] 管理员详情接口已返回完整支付字段、报告列表、时间线
 - [x] 用户端可查看订单时间线、支付状态、报告入口
 
 ### 当前缺口
 
-- [ ] 管理控制台里还没有过敏原订单运营页面
-- [ ] 管理员详情接口没有完整暴露支付字段
 - [ ] 没有退款/售后处理接口
 - [ ] 没有面向运营的发货 SOP 文档
 - [ ] 没有支付对账视图
 - [ ] 没有订单异常告警和人工备注流转机制
-- [ ] 当前会员端仍以邮箱验证码登录为主，缺少传统账号密码登录体系
+- [ ] 订单列表页还没有“创建时间”筛选，也没有列表级快捷履约动作
+- [ ] 管理备注目前只支持随动作写入 `admin_remark`，还没有独立备注管理区
+- [ ] 线上旧会员清理脚本仍需在切流前 `dry-run` 并人工确认执行
 
 ## 账号体系规划
 
 ### 当前状态
 
-- 会员端当前是邮箱验证码登录
-- 首次登录会自动创建账号
-- 还没有标准的“注册 / 登录 / 找回密码”闭环
+- [x] 已切换为 `用户名/邮箱 + 密码` 登录
+- [x] 已上线独立 `/login`、`/register`、`/forgot-password` 页面
+- [x] 注册改为“邮箱验证码验证后建号”
+- [x] 已提供旧会员清理脚本入口：`go run ./bin/allergy_member_cleanup.go`
+- [ ] 正式环境仍需先执行清理脚本 `dry-run`，再安排切流
 
 ### 目标方案
 
-- [ ] 支持传统登录方式：`用户名/邮箱 + 密码`
-- [ ] 支持独立注册流程，不再依赖“首次登录自动建号”
-- [ ] 邮箱验证码仅用于以下场景：
+- [x] 支持传统登录方式：`用户名/邮箱 + 密码`
+- [x] 支持独立注册流程，不再依赖“首次登录自动建号”
+- [x] 邮箱验证码仅用于以下场景：
   - 注册时验证邮箱归属
   - 找回密码
   - 高风险安全操作时二次确认
-- [ ] 日常登录默认不再要求邮箱验证码
+- [x] 日常登录默认不再要求邮箱验证码
 - [ ] 保留后续接入短信、2FA、Passkey 的扩展空间
+
+对应文档：
+
+- [docs/auth/member-auth-design.md](./docs/auth/member-auth-design.md)
+- [docs/auth/member-auth-api-contract.md](./docs/auth/member-auth-api-contract.md)
+- [docs/auth/member-auth-migration-cleanup.md](./docs/auth/member-auth-migration-cleanup.md)
 
 ### 注册与登录流程 TODO
 
@@ -108,8 +137,8 @@
 
 ### 1. 支付后进入待履约
 
-- [ ] 管理员能筛选 `payment_status=paid` 的订单
-- [ ] 管理员能查看订单详情：
+- [x] 管理员能筛选 `payment_status=paid` 的订单
+- [x] 管理员能查看订单详情：
   - 收件人姓名
   - 手机号
   - 收货地址
@@ -119,36 +148,38 @@
   - 支付时间
   - 回调原文
 - [ ] 管理员能填写内部备注，例如特殊发货要求、客服备注、补寄说明
+  当前仅支持在状态动作中附带备注并写入 `admin_remark`，还没有独立备注流转
 
 ### 2. 发货采样盒
 
-- [ ] 提供后台发货动作
-- [ ] 发货时录入：
+- [x] 提供后台发货动作
+- [x] 发货时录入：
   - `kit_code`
   - `outbound_carrier`
   - `outbound_tracking_no`
   - `outbound_shipped_at`
-- [ ] 发货后自动把订单置为 `kit_shipped`
-- [ ] 发货后给用户时间线增加“采样盒已寄出”
-- [ ] 订单详情页展示物流公司和物流单号
+- [x] 发货后自动把订单置为 `kit_shipped`
+- [x] 发货后给用户时间线增加“采样盒已寄出”
+- [x] 订单详情页展示物流公司和物流单号
 
 ### 3. 样本回收与检测
 
-- [ ] 提供后台“样本已签收”动作
-- [ ] 标记样本签收后自动更新：
+- [x] 提供后台“样本已签收”动作
+- [x] 标记样本签收后自动更新：
   - 采样盒状态
   - `lab_submission`
   - 订单状态为 `sample_received`
-- [ ] 预留“检测中”状态入口
-- [ ] 支持人工备注实验室接收情况、异常样本说明
+- [x] 预留“检测中”状态入口
+- [x] 支持人工备注实验室接收情况、异常样本说明
+  通过样本签收、开始检测等动作上的 `remark` 字段实现
 
 ### 4. 报告交付
 
-- [ ] 后台支持上传 PDF 报告
-- [ ] 后台支持发布报告
-- [ ] 发布后用户端可预览/下载
-- [ ] 后台支持补发报告邮件
-- [ ] 后台查看邮件投递日志
+- [x] 后台支持上传 PDF 报告
+- [x] 后台支持发布报告
+- [x] 发布后用户端可预览/下载
+- [x] 后台支持补发报告邮件
+- [x] 后台查看邮件投递日志
 
 ### 5. 售后与财务
 
@@ -158,17 +189,23 @@
 - [ ] 增加支付对账页
 - [ ] 支持按支付时间、支付渠道、订单号导出
 
+对应文档：
+
+- [docs/payment/refund-design.md](./docs/payment/refund-design.md)
+- [docs/reconciliation/reconciliation-design.md](./docs/reconciliation/reconciliation-design.md)
+
 ## 后台页面规划
 
 ### A. 订单列表页
 
-- [ ] 筛选项：
+- [x] 筛选项：
   - 订单号
   - 用户邮箱
   - 支付状态
   - 订单状态
+- [ ] 筛选项：
   - 创建时间
-- [ ] 列表字段：
+- [x] 列表字段：
   - 订单号
   - 用户邮箱
   - 收件人
@@ -176,29 +213,34 @@
   - 订单状态
   - 支付时间
   - 创建时间
-- [ ] 快捷动作：
+- [x] 快捷动作：
   - 查看详情
+- [ ] 快捷动作：
   - 发货
   - 标记样本签收
   - 上传报告
 
 ### B. 订单详情页
 
-- [ ] 基础信息区
-- [ ] 支付信息区
-- [ ] 收件与地址区
-- [ ] 物流与采样盒区
-- [ ] 时间线区
-- [ ] 报告区
+- [x] 基础信息区
+- [x] 支付信息区
+- [x] 收件与地址区
+- [x] 物流与采样盒区
+- [x] 时间线区
+- [x] 报告区
 - [ ] 管理备注区
+
+对应文档：
+
+- [docs/fulfillment/notes-and-audit-design.md](./docs/fulfillment/notes-and-audit-design.md)
 
 ### C. 报告管理区
 
-- [ ] 上传新报告
-- [ ] 发布当前版本
-- [ ] 查看历史版本
-- [ ] 手动补发邮件
-- [ ] 查看投递日志
+- [x] 上传新报告
+- [x] 发布当前版本
+- [x] 查看历史版本
+- [x] 手动补发邮件
+- [x] 查看投递日志
 
 ## API 整理
 
@@ -208,15 +250,20 @@
 - [x] `GET /api/admin/orders/:id`
 - [x] `PATCH /api/admin/orders/:id/status`
 - [x] `POST /api/admin/orders/:id/kit`
+- [x] `POST /api/admin/orders/:id/sample-sent-back`
 - [x] `POST /api/admin/orders/:id/sample-received`
+- [x] `POST /api/admin/orders/:id/testing-started`
 - [x] `POST /api/admin/orders/:id/report`
+- [x] `POST /api/admin/orders/:id/complete`
+- [x] `GET /api/admin/reports/:id/preview`
+- [x] `GET /api/admin/reports/:id/download`
 - [x] `POST /api/admin/reports/:id/publish`
 - [x] `POST /api/admin/reports/:id/send-email`
 - [x] `GET /api/admin/reports/:id/delivery-logs`
 
 ### 需要补充或增强的 API
 
-- [ ] 管理员订单详情返回完整支付字段
+- [x] 管理员订单详情返回完整支付字段
 - [ ] 退款接口
 - [ ] 发货物流更新历史
 - [ ] 订单操作审计日志
@@ -226,10 +273,10 @@
 
 ### 第一阶段：先可运营
 
-- [ ] 补齐管理员订单详情返回字段
-- [ ] 新增管理后台订单列表页
-- [ ] 新增订单详情页
-- [ ] 接入发货、样本签收、上传报告、发布报告按钮
+- [x] 补齐管理员订单详情返回字段
+- [x] 新增管理后台订单列表页
+- [x] 新增订单详情页
+- [x] 接入发货、样本签收、上传报告、发布报告按钮
 
 ### 第二阶段：补齐财务与售后
 

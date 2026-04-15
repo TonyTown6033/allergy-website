@@ -2,10 +2,15 @@
 
 日期：2026-04-13
 
+> 状态说明
+> - 这份文档保留第一阶段业务 API 草案
+> - 其中认证接口章节基于早期“邮箱验证码登录”兼容方案
+> - 当前会员认证接口请以 [../auth/member-auth-api-contract.md](../auth/member-auth-api-contract.md) 为准
+
 关联文档：
 
-- [new-api-allergy-integration-design.md](/Users/town/Projects/allergy_website/new-api-allergy-integration-design.md:1)
-- [new-api-allergy-data-model-draft.md](/Users/town/Projects/allergy_website/new-api-allergy-data-model-draft.md:1)
+- [integration-design.md](../architecture/integration-design.md)
+- [data-model-draft.md](../architecture/data-model-draft.md)
 
 ## 1. 范围
 

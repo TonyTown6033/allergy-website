@@ -6,9 +6,8 @@ Before making changes in this workspace, read:
 
 1. `./AGENTS.md`
 2. `./claude.md`
-3. `./new-api-allergy-integration-design.md`
-4. `./new-api-allergy-data-model-draft.md`
-5. `./new-api-allergy-api-draft.md`
+3. `./TODO.md`
+4. `./docs/README.md`
 
 If you modify `new-api/`, also follow:
 
@@ -43,7 +42,9 @@ These are already decided. Do not redesign them unless the user explicitly chang
 ### Identity and login
 
 - Members live directly on `new-api`'s `user` table
-- Public login uses email verification code
+- Public login uses `username/email + password`
+- Registration requires email verification first
+- Password reset uses email verification code
 - The site uses its own session token
 - Do not reuse `new-api` `access_token` semantics
 - Public member login and admin login must stay separated
@@ -104,7 +105,9 @@ Do not write large chunks of business logic first and “add tests later”.
 
 ### Highest-priority tests
 
-- Email-code login flow
+- Username/email + password login flow
+- Registration email verification flow
+- Forgot-password and reset flow
 - Order creation and payment state transitions
 - Payment webhook handling
 - Report authorization
@@ -214,10 +217,17 @@ Key rules:
 - `GET /api/testimonials`
 - `GET /api/articles`
 - `GET /api/products`
-- `POST /api/auth/send-code`
+
+### Member auth APIs
+
+- `POST /api/auth/register/send-code`
+- `POST /api/auth/register`
 - `POST /api/auth/login`
+- `POST /api/auth/forgot-password/send-code`
+- `POST /api/auth/forgot-password/reset`
 - `GET /api/auth/me`
 - `POST /api/auth/logout`
+- `PATCH /api/auth/profile`
 
 ### User APIs
 
@@ -267,7 +277,9 @@ Add if feasible in the same round:
 Implement public compatibility APIs:
 
 - content
-- email-code login
+- register verification
+- password login
+- password reset
 - session validation
 
 ### Step 3
@@ -313,7 +325,7 @@ Only after the main flow is stable, consider:
 ## Frontend Guidance
 
 - Minimize changes to `Allergy/`
-- Only make necessary changes for email login, order pages, payment, and report pages
+- Only make necessary changes for register/login/forgot-password, order pages, payment, and report pages
 - Do not expose `new-api` platform vocabulary in public UI
 
 ## Done Means
