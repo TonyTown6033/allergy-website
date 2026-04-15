@@ -22,18 +22,21 @@ jobs:
       - name: Update submodule
         env:
           SUBMODULES_TOKEN: ${{ secrets.SUBMODULES_TOKEN }}
+          SUBMODULE: ${{ github.event.client_payload.submodule }}
         run: |
           git config --global url."https://x-access-token:${SUBMODULES_TOKEN}@github.com/".insteadOf "https://github.com/"
           git submodule sync --recursive
-          git submodule update --init --remote new-api
+          git submodule update --init --remote "${SUBMODULE}"
 
       - name: Commit and push if changed
+        env:
+          SUBMODULE: ${{ github.event.client_payload.submodule }}
         run: |
-          git add new-api
+          git add "${SUBMODULE}"
           if git diff --staged --quiet; then
             echo "No submodule changes, skipping."
           else
-            SHA=$(git -C new-api rev-parse --short HEAD)
-            git commit -m "chore: auto-update new-api submodule to ${SHA}"
+            SHA=$(git -C "${SUBMODULE}" rev-parse --short HEAD)
+            git commit -m "chore: auto-update ${SUBMODULE} submodule to ${SHA}"
             git push origin main
           fi
