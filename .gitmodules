@@ -1,8 +1,8 @@
 [submodule "Allergy"]
 	path = Allergy
 	url = https://github.com/wj1290659837-max/-Allergy.git
-	branch = codex
+	branch = main
 [submodule "new-api"]
 	path = new-api
 	url = https://github.com/TonyTown6033/allergy-new-api.git
-	branch = codex
+	branch = main
