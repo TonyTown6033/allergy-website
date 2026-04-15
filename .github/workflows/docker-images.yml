@@ -57,7 +57,7 @@ jobs:
         run: |
           git config --global url."https://x-access-token:${SUBMODULES_TOKEN}@github.com/".insteadOf "https://github.com/"
           git submodule sync --recursive
-          git submodule update --init --recursive
+          git submodule update --init --remote --recursive
 
       - name: Normalize image owner
         run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
