@@ -27,6 +27,15 @@
 |---|---|
 | [api/allergy-api-draft.md](./api/allergy-api-draft.md) | 第一阶段前后端业务 API 草案 |
 
+### Catalog
+
+| 文档 | 说明 |
+|---|---|
+| [catalog/service-catalog-design.md](./catalog/service-catalog-design.md) | 检测项目目录、上架与价格管理设计 |
+| [catalog/service-catalog-api-contract.md](./catalog/service-catalog-api-contract.md) | 检测项目目录接口契约 |
+| [catalog/service-catalog-migration.md](./catalog/service-catalog-migration.md) | 检测项目目录建表与默认数据迁移方案 |
+| [catalog/service-catalog-test-plan.md](./catalog/service-catalog-test-plan.md) | 检测项目目录测试计划 |
+
 ### Auth
 
 | 文档 | 说明 |
@@ -36,6 +45,14 @@
 | [auth/member-auth-api-contract.md](./auth/member-auth-api-contract.md) | 会员认证接口契约 |
 | [auth/member-auth-migration-cleanup.md](./auth/member-auth-migration-cleanup.md) | 旧会员清理与切流方案 |
 | [auth/member-auth-test-plan.md](./auth/member-auth-test-plan.md) | 会员账号体系测试计划 |
+
+### Deploy
+
+| 文档 | 说明 |
+|---|---|
+| [deploy/README.md](./deploy/README.md) | 部署与发布域文档导航 |
+| [deploy/cicd-design.md](./deploy/cicd-design.md) | CI/CD 与发布治理目标设计 |
+| [deploy/cicd-runbook.md](./deploy/cicd-runbook.md) | CI/CD 改造后的目标运维手册 |
 
 ### Fulfillment
 
@@ -72,6 +89,7 @@
 - 如果认证方案出现冲突，以 `auth/` 目录为准
 - 新功能优先按领域沉到：
   - `docs/auth/`
+  - `docs/deploy/`
   - `docs/fulfillment/`
   - `docs/payment/`
   - `docs/reconciliation/`

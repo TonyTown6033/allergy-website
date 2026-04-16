@@ -22,10 +22,12 @@
 | 任务 | 当前状态 | 文档入口 |
 |---|---|---|
 | 会员账号体系改造 | 已实现，待执行线上清理与联调 | [design](./docs/auth/member-auth-design.md)<br>[api-contract](./docs/auth/member-auth-api-contract.md)<br>[migration](./docs/auth/member-auth-migration-cleanup.md)<br>[test-plan](./docs/auth/member-auth-test-plan.md) |
+| 检测项目目录与上架管理 | 已建草案，待实施 | [design](./docs/catalog/service-catalog-design.md)<br>[api-contract](./docs/catalog/service-catalog-api-contract.md)<br>[migration](./docs/catalog/service-catalog-migration.md)<br>[test-plan](./docs/catalog/service-catalog-test-plan.md) |
 | 履约备注区与操作日志 | 已建草案，待细化 | [design](./docs/fulfillment/notes-and-audit-design.md)<br>[api-contract](./docs/fulfillment/notes-and-audit-api-contract.md)<br>[test-plan](./docs/fulfillment/notes-and-audit-test-plan.md) |
 | 发货 SOP 文档 | 已建骨架，待补内容 | [docs/fulfillment/shipping-sop-outline.md](./docs/fulfillment/shipping-sop-outline.md) |
 | 退款流程 | 已建草案，待锁定规则 | [design](./docs/payment/refund-design.md)<br>[api-contract](./docs/payment/refund-api-contract.md)<br>[test-plan](./docs/payment/refund-test-plan.md) |
 | 支付对账与导出 | 已建草案，待补接口 | [design](./docs/reconciliation/reconciliation-design.md)<br>[api-contract](./docs/reconciliation/reconciliation-api-contract.md)<br>[test-plan](./docs/reconciliation/reconciliation-test-plan.md) |
+| CI/CD 与发布治理改造 | 已建草案，待实施 | [design](./docs/deploy/cicd-design.md)<br>[runbook](./docs/deploy/cicd-runbook.md) |
 
 ## 当前实现状态
 
@@ -49,9 +51,12 @@
 - [ ] 没有面向运营的发货 SOP 文档
 - [ ] 没有支付对账视图
 - [ ] 没有订单异常告警和人工备注流转机制
+- [ ] 没有后台检测项目目录，前台商品展示与可下单服务仍未统一到同一数据源
 - [ ] 订单列表页还没有“创建时间”筛选，也没有列表级快捷履约动作
 - [ ] 管理备注目前只支持随动作写入 `admin_remark`，还没有独立备注管理区
 - [ ] 线上旧会员清理脚本仍需在切流前 `dry-run` 并人工确认执行
+- [ ] 根仓库镜像构建仍使用浮动 submodule 头部，发布产物不可严格复现
+- [ ] 生产部署目前仍直接消费 `latest + watchtower`，缺少固定版本与人工发布闸门
 
 ## 账号体系规划
 
