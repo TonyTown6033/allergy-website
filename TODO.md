@@ -22,7 +22,7 @@
 | 任务 | 当前状态 | 文档入口 |
 |---|---|---|
 | 会员账号体系改造 | 已实现，待执行线上清理与联调 | [design](./docs/auth/member-auth-design.md)<br>[api-contract](./docs/auth/member-auth-api-contract.md)<br>[migration](./docs/auth/member-auth-migration-cleanup.md)<br>[test-plan](./docs/auth/member-auth-test-plan.md) |
-| 检测项目目录与上架管理 | 已建草案，待实施 | [design](./docs/catalog/service-catalog-design.md)<br>[api-contract](./docs/catalog/service-catalog-api-contract.md)<br>[migration](./docs/catalog/service-catalog-migration.md)<br>[test-plan](./docs/catalog/service-catalog-test-plan.md) |
+| 检测项目目录与上架管理 | 已实现，待线上联调 | [design](./docs/catalog/service-catalog-design.md)<br>[api-contract](./docs/catalog/service-catalog-api-contract.md)<br>[migration](./docs/catalog/service-catalog-migration.md)<br>[test-plan](./docs/catalog/service-catalog-test-plan.md) |
 | 履约备注区与操作日志 | 已建草案，待细化 | [design](./docs/fulfillment/notes-and-audit-design.md)<br>[api-contract](./docs/fulfillment/notes-and-audit-api-contract.md)<br>[test-plan](./docs/fulfillment/notes-and-audit-test-plan.md) |
 | 发货 SOP 文档 | 已建骨架，待补内容 | [docs/fulfillment/shipping-sop-outline.md](./docs/fulfillment/shipping-sop-outline.md) |
 | 退款流程 | 已建草案，待锁定规则 | [design](./docs/payment/refund-design.md)<br>[api-contract](./docs/payment/refund-api-contract.md)<br>[test-plan](./docs/payment/refund-test-plan.md) |
@@ -44,6 +44,9 @@
 - [x] 可通过 API 上传 PDF 报告、发布报告、补发邮件
 - [x] 管理员详情接口已返回完整支付字段、报告列表、时间线
 - [x] 用户端可查看订单时间线、支付状态、报告入口
+- [x] 后台可新增、编辑、上架、下架检测项目，并定义价格与商品详情
+- [x] 前台商品展示与下单服务已统一到已上架检测项目目录
+- [x] 下单时保存检测项目名称和价格快照，后续改价或下架不影响既有订单履约
 
 ### 当前缺口
 
@@ -51,7 +54,6 @@
 - [ ] 没有面向运营的发货 SOP 文档
 - [ ] 没有支付对账视图
 - [ ] 没有订单异常告警和人工备注流转机制
-- [ ] 没有后台检测项目目录，前台商品展示与可下单服务仍未统一到同一数据源
 - [ ] 订单列表页还没有“创建时间”筛选，也没有列表级快捷履约动作
 - [ ] 管理备注目前只支持随动作写入 `admin_remark`，还没有独立备注管理区
 - [ ] 线上旧会员清理脚本仍需在切流前 `dry-run` 并人工确认执行
@@ -254,6 +256,15 @@
 - [x] 手动补发邮件
 - [x] 查看投递日志
 
+### D. 检测项目管理区
+
+- [x] 列表展示检测项目、价格、状态和排序
+- [x] 新增检测项目
+- [x] 编辑项目标题、详情、图片、标签、CTA、价格和排序
+- [x] 上架检测项目
+- [x] 下架检测项目
+- [x] 前台仅展示已上架检测项目
+
 ## API 整理
 
 ### 已有管理员 API
@@ -272,6 +283,12 @@
 - [x] `POST /api/admin/reports/:id/publish`
 - [x] `POST /api/admin/reports/:id/send-email`
 - [x] `GET /api/admin/reports/:id/delivery-logs`
+- [x] `GET /api/admin/service-products`
+- [x] `GET /api/admin/service-products/:id`
+- [x] `POST /api/admin/service-products`
+- [x] `PATCH /api/admin/service-products/:id`
+- [x] `POST /api/admin/service-products/:id/publish`
+- [x] `POST /api/admin/service-products/:id/archive`
 
 ### 需要补充或增强的 API
 
@@ -289,6 +306,8 @@
 - [x] 新增管理后台订单列表页
 - [x] 新增订单详情页
 - [x] 接入发货、样本签收、上传报告、发布报告按钮
+- [x] 新增后台检测项目目录与上架管理
+- [x] 前台商品和下单服务使用同一检测项目目录
 
 ### 第二阶段：补齐财务与售后
 
@@ -319,5 +338,5 @@
 
 ## 备注
 
-- 当前代码已具备后端履约能力，主要缺的是管理后台页面和运营工具化
-- 当前最优先的工作不是重写支付，而是把现有支付结果和履约动作接进后台页面
+- 当前代码已具备检测项目目录、订单支付、履约、报告交付的主流程能力
+- 后续优先补齐退款售后、支付对账、运营备注和异常告警
