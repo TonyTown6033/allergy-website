@@ -25,3 +25,5 @@
 - [refund-test-plan.md](./refund-test-plan.md)
 - [order-payment-ui-design.md](./order-payment-ui-design.md)
 - [order-payment-ui-api-contract.md](./order-payment-ui-api-contract.md)
+- [order-cancellation-design.md](./order-cancellation-design.md)
+- [order-cancellation-api-contract.md](./order-cancellation-api-contract.md)

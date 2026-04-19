@@ -22,12 +22,13 @@
 | 任务 | 当前状态 | 文档入口 |
 |---|---|---|
 | 会员账号体系改造 | 已实现，待执行线上清理与联调 | [design](./docs/auth/member-auth-design.md)<br>[api-contract](./docs/auth/member-auth-api-contract.md)<br>[migration](./docs/auth/member-auth-migration-cleanup.md)<br>[test-plan](./docs/auth/member-auth-test-plan.md) |
-| 检测项目目录与上架管理 | 已实现，待线上联调 | [design](./docs/catalog/service-catalog-design.md)<br>[api-contract](./docs/catalog/service-catalog-api-contract.md)<br>[migration](./docs/catalog/service-catalog-migration.md)<br>[test-plan](./docs/catalog/service-catalog-test-plan.md) |
+| 检测项目目录与上架管理 | 已实现，已完成联调 | [design](./docs/catalog/service-catalog-design.md)<br>[api-contract](./docs/catalog/service-catalog-api-contract.md)<br>[migration](./docs/catalog/service-catalog-migration.md)<br>[test-plan](./docs/catalog/service-catalog-test-plan.md) |
 | 履约备注区与操作日志 | 已建草案，待细化 | [design](./docs/fulfillment/notes-and-audit-design.md)<br>[api-contract](./docs/fulfillment/notes-and-audit-api-contract.md)<br>[test-plan](./docs/fulfillment/notes-and-audit-test-plan.md) |
 | 履约上下游对接信息清单 | 已建草案，待逐项对接确认 | [design](./docs/fulfillment/upstream-downstream-integration-design.md) |
 | 发货 SOP 文档 | 已建骨架，待补内容 | [docs/fulfillment/shipping-sop-outline.md](./docs/fulfillment/shipping-sop-outline.md) |
 | 退款流程 | 已建草案，待锁定规则 | [design](./docs/payment/refund-design.md)<br>[api-contract](./docs/payment/refund-api-contract.md)<br>[test-plan](./docs/payment/refund-test-plan.md) |
-| 会员订单支付页体验补齐 | 已实现，待浏览器联调 | [design](./docs/payment/order-payment-ui-design.md)<br>[api-contract](./docs/payment/order-payment-ui-api-contract.md) |
+| 会员订单支付页体验补齐 | 已实现，已完成联调 | [design](./docs/payment/order-payment-ui-design.md)<br>[api-contract](./docs/payment/order-payment-ui-api-contract.md) |
+| 会员待支付订单取消 | 已实现 | [design](./docs/payment/order-cancellation-design.md)<br>[api-contract](./docs/payment/order-cancellation-api-contract.md) |
 | 支付对账与导出 | 已建草案，待补接口 | [design](./docs/reconciliation/reconciliation-design.md)<br>[api-contract](./docs/reconciliation/reconciliation-api-contract.md)<br>[test-plan](./docs/reconciliation/reconciliation-test-plan.md) |
 | CI/CD 与发布治理改造 | 已建草案，待实施 | [design](./docs/deploy/cicd-design.md)<br>[runbook](./docs/deploy/cicd-runbook.md) |
 
@@ -49,6 +50,7 @@
 - [x] 后台可新增、编辑、上架、下架检测项目，并定义价格与商品详情
 - [x] 前台商品展示与下单服务已统一到已上架检测项目目录
 - [x] 下单时保存检测项目名称和价格快照，后续改价或下架不影响既有订单履约
+- [x] 用户可取消待支付订单，取消后订单与支付状态同步关闭并写入时间线
 
 ### 当前缺口
 
@@ -98,19 +100,19 @@
 
 ### 注册与登录流程 TODO
 
-- [ ] 新增注册页
-- [ ] 注册时填写：
+- [x] 新增注册页
+- [x] 注册时填写：
   - 用户名
   - 邮箱
   - 密码
   - 确认密码
-- [ ] 注册时发送邮箱验证码
-- [ ] 邮箱验证通过后才允许完成注册
-- [ ] 新增登录页，支持输入用户名或邮箱登录
-- [ ] 登录成功后进入用户订单中心
-- [ ] 新增忘记密码页
-- [ ] 忘记密码通过邮箱验证码重置密码
-- [ ] 后台增加账号状态和邮箱验证状态字段
+- [x] 注册时发送邮箱验证码
+- [x] 邮箱验证通过后才允许完成注册
+- [x] 新增登录页，支持输入用户名或邮箱登录
+- [x] 登录成功后进入用户订单中心
+- [x] 新增忘记密码页
+- [x] 忘记密码通过邮箱验证码重置密码
+- [x] 后台增加账号状态和邮箱验证状态字段
 - [ ] 评估是否兼容保留现有“邮箱验证码快捷登录”作为灰度或备用入口
 
 ## 数据与状态
@@ -199,6 +201,7 @@
 
 ### 5. 售后与财务
 
+- [x] 允许用户主动取消待支付且未履约的订单
 - [ ] 设计退款流程
 - [ ] 增加退款状态和退款时间
 - [ ] 区分“支付成功但未发货”和“已发货不可直接退款”
