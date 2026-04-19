@@ -24,8 +24,10 @@
 | 会员账号体系改造 | 已实现，待执行线上清理与联调 | [design](./docs/auth/member-auth-design.md)<br>[api-contract](./docs/auth/member-auth-api-contract.md)<br>[migration](./docs/auth/member-auth-migration-cleanup.md)<br>[test-plan](./docs/auth/member-auth-test-plan.md) |
 | 检测项目目录与上架管理 | 已实现，待线上联调 | [design](./docs/catalog/service-catalog-design.md)<br>[api-contract](./docs/catalog/service-catalog-api-contract.md)<br>[migration](./docs/catalog/service-catalog-migration.md)<br>[test-plan](./docs/catalog/service-catalog-test-plan.md) |
 | 履约备注区与操作日志 | 已建草案，待细化 | [design](./docs/fulfillment/notes-and-audit-design.md)<br>[api-contract](./docs/fulfillment/notes-and-audit-api-contract.md)<br>[test-plan](./docs/fulfillment/notes-and-audit-test-plan.md) |
+| 履约上下游对接信息清单 | 已建草案，待逐项对接确认 | [design](./docs/fulfillment/upstream-downstream-integration-design.md) |
 | 发货 SOP 文档 | 已建骨架，待补内容 | [docs/fulfillment/shipping-sop-outline.md](./docs/fulfillment/shipping-sop-outline.md) |
 | 退款流程 | 已建草案，待锁定规则 | [design](./docs/payment/refund-design.md)<br>[api-contract](./docs/payment/refund-api-contract.md)<br>[test-plan](./docs/payment/refund-test-plan.md) |
+| 会员订单支付页体验补齐 | 已实现，待浏览器联调 | [design](./docs/payment/order-payment-ui-design.md)<br>[api-contract](./docs/payment/order-payment-ui-api-contract.md) |
 | 支付对账与导出 | 已建草案，待补接口 | [design](./docs/reconciliation/reconciliation-design.md)<br>[api-contract](./docs/reconciliation/reconciliation-api-contract.md)<br>[test-plan](./docs/reconciliation/reconciliation-test-plan.md) |
 | CI/CD 与发布治理改造 | 已建草案，待实施 | [design](./docs/deploy/cicd-design.md)<br>[runbook](./docs/deploy/cicd-runbook.md) |
 
@@ -243,10 +245,12 @@
 - [x] 时间线区
 - [x] 报告区
 - [ ] 管理备注区
+- [x] 支付区改为动态支付方式、展示待支付金额，并补齐支付回跳提示
 
 对应文档：
 
 - [docs/fulfillment/notes-and-audit-design.md](./docs/fulfillment/notes-and-audit-design.md)
+- [docs/payment/order-payment-ui-design.md](./docs/payment/order-payment-ui-design.md)
 
 ### C. 报告管理区
 

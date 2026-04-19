@@ -23,3 +23,5 @@
 - [refund-design.md](./refund-design.md)
 - [refund-api-contract.md](./refund-api-contract.md)
 - [refund-test-plan.md](./refund-test-plan.md)
+- [order-payment-ui-design.md](./order-payment-ui-design.md)
+- [order-payment-ui-api-contract.md](./order-payment-ui-api-contract.md)
