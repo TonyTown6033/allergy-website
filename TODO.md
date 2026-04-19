@@ -23,6 +23,7 @@
 |---|---|---|
 | 会员账号体系改造 | 已实现，待执行线上清理与联调 | [design](./docs/auth/member-auth-design.md)<br>[api-contract](./docs/auth/member-auth-api-contract.md)<br>[migration](./docs/auth/member-auth-migration-cleanup.md)<br>[test-plan](./docs/auth/member-auth-test-plan.md) |
 | 检测项目目录与上架管理 | 已实现，已完成联调 | [design](./docs/catalog/service-catalog-design.md)<br>[api-contract](./docs/catalog/service-catalog-api-contract.md)<br>[migration](./docs/catalog/service-catalog-migration.md)<br>[test-plan](./docs/catalog/service-catalog-test-plan.md) |
+| 检测项目折扣价与划线原价 | 已实现 | [design](./docs/catalog/service-catalog-design.md)<br>[api-contract](./docs/catalog/service-catalog-api-contract.md)<br>[migration](./docs/catalog/service-catalog-migration.md)<br>[test-plan](./docs/catalog/service-catalog-test-plan.md) |
 | 检测项目图片上传 | 已实现 | [design](./docs/catalog/service-catalog-image-upload-design.md)<br>[api-contract](./docs/catalog/service-catalog-image-upload-api-contract.md) |
 | 履约备注区与操作日志 | 已建草案，待细化 | [design](./docs/fulfillment/notes-and-audit-design.md)<br>[api-contract](./docs/fulfillment/notes-and-audit-api-contract.md)<br>[test-plan](./docs/fulfillment/notes-and-audit-test-plan.md) |
 | 履约上下游对接信息清单 | 已建草案，待逐项对接确认 | [design](./docs/fulfillment/upstream-downstream-integration-design.md) |
@@ -49,6 +50,7 @@
 - [x] 管理员详情接口已返回完整支付字段、报告列表、时间线
 - [x] 用户端可查看订单时间线、支付状态、报告入口
 - [x] 后台可新增、编辑、上架、下架检测项目，并定义价格与商品详情
+- [x] 后台可为检测项目维护折后价与可选划线原价，前台按折后价展示和下单
 - [x] 后台可为检测项目上传本地图片，并自动回填为站内 `image_url`
 - [x] 前台商品展示与下单服务已统一到已上架检测项目目录
 - [x] 下单时保存检测项目名称和价格快照，后续改价或下架不影响既有订单履约

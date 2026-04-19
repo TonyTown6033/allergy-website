@@ -34,6 +34,7 @@
 | `description` | 当前默认居家检测服务说明 |
 | `cta_text` | `立即购买` |
 | `price_cents` | `19900` |
+| `original_price_cents` | `0` |
 | `currency` | `CNY` |
 | `status` | `published` |
 
@@ -42,7 +43,23 @@
 - 仅在该 `service_code` 不存在时插入
 - 如果已存在同编码记录，不覆盖管理员后来修改的内容
 
-### 3. 旧数据口径
+### 3. 折扣原价字段
+
+新增字段：
+
+- `allergy_service_product.original_price_cents`
+
+默认值：
+
+- `0`
+
+规则：
+
+- `0` 表示无划线原价
+- 旧检测项目迁移后默认不显示折扣
+- 不回填历史订单，订单仍只保存实际支付价格快照 `service_price_cents`
+
+### 4. 旧数据口径
 
 - `AllergyProducts` 旧 `Option JSON` 不再作为真实可售目录
 - 历史订单不做回填

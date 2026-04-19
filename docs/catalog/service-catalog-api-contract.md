@@ -22,6 +22,7 @@
     "ctaText": "立即购买",
     "tag": "推荐",
     "price_cents": 19900,
+    "original_price_cents": 29900,
     "currency": "CNY"
   }
 ]
@@ -31,6 +32,8 @@
 
 - 仅返回 `published` 项目
 - 按 `sort_order asc, id desc` 排序
+- `price_cents` 为折后实际售价
+- `original_price_cents` 为可选划线原价；值为 `0` 或不大于 `price_cents` 时前台不展示划线原价
 
 ## 2. 会员下单接口
 
@@ -56,7 +59,8 @@
 新增规则：
 
 - `service_code` 必须命中 `published` 项目
-- 订单创建时写入项目当前名称和价格快照
+- 订单创建时写入项目当前名称和折后售价快照
+- 折扣项目下单时，`service_price_cents` 等于项目 `price_cents`，不等于 `original_price_cents`
 
 失败语义：
 
@@ -83,6 +87,7 @@
       "service_code": "allergy-test-basic",
       "title": "埃勒吉居家过敏原检测服务",
       "price_cents": 19900,
+      "original_price_cents": 29900,
       "currency": "CNY",
       "status": "published",
       "sort_order": 10,
@@ -115,6 +120,7 @@
   "cta_text": "立即购买",
   "tag": "推荐",
   "price_cents": 19900,
+  "original_price_cents": 29900,
   "currency": "CNY",
   "sort_order": 10,
   "status": "published",
@@ -140,6 +146,7 @@
   "cta_text": "立即下单",
   "tag": "新品",
   "price_cents": 29900,
+  "original_price_cents": 39900,
   "sort_order": 20,
   "status": "draft"
 }
@@ -152,6 +159,7 @@
 - `title` 必填
 - `description` 必填
 - `price_cents` 必须大于 0
+- `original_price_cents` 可为 0；如果填写，必须大于 `price_cents`
 - `currency` 固定由服务端写为 `CNY`
 - `cta_text` 为空时由服务端补默认值 `立即购买`
 
@@ -171,6 +179,7 @@
   "cta_text": "立即预约",
   "tag": "热门",
   "price_cents": 32900,
+  "original_price_cents": 42900,
   "sort_order": 30,
   "status": "draft"
 }
